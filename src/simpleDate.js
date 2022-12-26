@@ -2,9 +2,9 @@ import * as C from './constants'
 import U from './utils.js'
 
 
-const isDayjs = d => d instanceof YMD_HMS_FORMAT // eslint-disable-line no-use-before-define
+const isDayjs = d => d instanceof SimpleDate // eslint-disable-line no-use-before-define
 
-const dayjs = function (date, c) {
+const simpleDate = function (date, c) {
   if (SimpleDate(date)) {
     return date.clone()
   }
@@ -16,31 +16,22 @@ const dayjs = function (date, c) {
 }
 
 const wrapper = (date, instance) =>
-  dayjs(date, {
-    x: instance.$x,
-    $offset: instance.$offset // todo: refactor; do not use this.$offset in you code
-  })
+    simpleDate(date, {
+    	x: instance.$x,
+    	$offset: instance.$offset // todo: refactor; do not use this.$offset in you code
+ 	}
+)
 
 const Utils = U // for plugin use
 Utils.w = wrapper
 
 const parseDate = (cfg) => {
-  const { date} = cfg
-  if (date === null) return new Date(NaN) // null is invalid
+  const {date} = cfg
+  if (date === null) return new Date(NaN); // null is invalid
 
-  if (Utils.u(date)) return new Date() // today
+  if (Utils.u(date)) return new Date();// today
 
-  if (date instanceof Date) return new Date(date)
-
-  if (typeof date === 'string' && !/Z$/i.test(date)) {
-    const d = date.match(C.REGEX_PARSE)
-    if (d) {
-      const m = d[2] - 1 || 0
-      const ms = (d[7] || '0').substring(0, 3)
-      return new Date(d[1], m, d[3]
-          || 1, d[4] || 0, d[5] || 0, d[6] || 0, ms)
-    }
-  }
+  if (date instanceof Date) return new Date(date);
 
   return new Date(date) // everything else
 }
@@ -85,7 +76,6 @@ class SimpleDate {
   format(formatStr) {
 
     const str = formatStr || C.FORMAT_DEFAULT;
-    const zoneStr = Utils.z(this);
     const { $H, $m, $M } = this
 
     const getShort = (arr, index, full, length) => (
