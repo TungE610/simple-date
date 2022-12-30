@@ -1,14 +1,17 @@
 import * as C from './constant'
 
-const padStart = (string, length, pad) => {
-  const s = String(string)
-  if (!s || s.length >= length) return string
-  return `${Array((length + 1) - s.length).join(pad)}${string}`
-}
+const padStart = (string, length, pad) => { // padStart('Tung', 6, '*) = '**Tung'
+  const s = '' + string;
+  if (!s || s.length >= length) {
+    return string;
+  };
+  
+  return `${Array((length + 1) - s.length).join(pad)}${string}`;
+};
 
 const monthDiff = (a, b) => {
   // function from moment.js in order to keep the same result
-  if (a.date() < b.date()) return -monthDiff(b, a)
+  if (a.date() < b.date()) return -monthDiff(b, a);
   const wholeMonthDiff = ((b.year() - a.year()) * 12) + (b.month() - a.month())
   const anchor = a.clone().add(wholeMonthDiff, C.M)
   const c = b - anchor < 0
@@ -38,7 +41,7 @@ const prettyUnit = (u) => {
 const isUndefined = s => s === undefined
 
 export default {
-  s: padStart,
+  ps: padStart,
   z: padZoneStr,
   m: monthDiff,
   a: absFloor,

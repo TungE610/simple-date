@@ -29,9 +29,8 @@ const parseDate = (cfg) => {
   const {date} = cfg
   if (date === null) return new Date(NaN); // null is invalid
 
-  if (Utils.u(date)) return new Date();// today
-
-  if (date instanceof Date) return new Date(date);
+  // TODO:Check
+  // if (Utils.u(date)) return new Date();// today 
 
   return new Date(date) // everything else
 }
@@ -43,78 +42,61 @@ class SimpleDate {
 
   parse(cfg) {
     this.$d = parseDate(cfg)
-    this.$x = cfg.x || {}
+    this.$x = cfg.x || {}   // define x: 
     this.init()
   }
 
   init() {
     const { $d } = this
-    this.$y = $d.getFullYear()
-    this.$M = $d.getMonth()
-    this.$D = $d.getDate()
-    this.$W = $d.getDay()
-    this.$H = $d.getHours()
-    this.$m = $d.getMinutes()
-    this.$s = $d.getSeconds()
-    this.$ms = $d.getMilliseconds()
+    this.$y = $d.getFullYear();  // $y: Full year
+    this.$M = $d.getMonth();	 // $M: Get month
+    this.$D = $d.getDate();		 // $D: Date 
+    this.$W = $d.getDay();		 // $W: Day
+    this.$H = $d.getHours();	 // $H: Hour
+    this.$m = $d.getMinutes();	 // $m: Minutes
+    this.$s = $d.getSeconds();	 // $ms: Milliseconds
+    this.$ms = $d.getMilliseconds();
   }
 
   $utils() {
     return Utils
-  }
+  };
   
-  $g(input, get, set) {
-    if (Utils.u(input)) return this[get]
-    return this.set(set, input)
-  }
-
   valueOf() {
     // timezone(hour) * 60 * 60 * 1000 => ms
-    return this.$d.getTime()
-  }
+    return this.$d.getTime(); // return time value of instance
+  };
 
   format(formatStr) {
 
     const str = formatStr || C.FORMAT_DEFAULT;
-    const { $H, $m, $M } = this
+    const { $H, $m, $M } = this;
 
     const getShort = (arr, index, full, length) => (
       (arr && (arr[index] || arr(this, str))) || full[index].slice(0, length)
-    )
+    );
     
-    const get$H = num => (
-      Utils.s($H % 12 || 12, num, '0')
-    )
-
-    const meridiemFunc = meridiem || ((hour, minute, isLowercase) => {
-      const m = (hour < 12 ? 'AM' : 'PM')
-      return isLowercase ? m.toLowerCase() : m
-    })
+    const get$H = num => Utils.ps($H % 12 || 12, num, '0'); // 8 => 08; 12 || 24 => 12
 
     const matches = {
       YY: String(this.$y).slice(-2),
       YYYY: this.$y,
       M: $M + 1,
-      MM: Utils.s($M + 1, 2, '0'),
-      // MMM: getShort(locale.monthsShort, $M, months, 3),
+      MM: Utils.ps($M + 1, 2, '0'),
       MMMM: getShort(months, $M),
       D: this.$D,
-      DD: Utils.s(this.$D, 2, '0'),
+      DD: Utils.ps(this.$D, 2, '0'),
       d: String(this.$W),
-      // dd: getShort(locale.weekdaysMin, this.$W, weekdays, 2),
-      // ddd: getShort(locale.weekdaysShort, this.$W, weekdays, 3),
       dddd: weekdays[this.$W],
       H: String($H),
-      HH: Utils.s($H, 2, '0'),
+      HH: Utils.ps($H, 2, '0'),
       h: get$H(1),
       hh: get$H(2),
-      a: meridiemFunc($H, $m, true),
-      A: meridiemFunc($H, $m, false),
       m: String($m),
-      mm: Utils.s($m, 2, '0'),
+      mm: Utils.ps($m, 2, '0'),
       s: String(this.$s),
-      ss: Utils.s(this.$s, 2, '0'),
-      SSS: Utils.s(this.$ms, 3, '0'),
+      ss: Utils.ps(this.$s, 2, '0'),
+      SSS: Utils.ps(this.$ms, 3, '0'),
     }
 
     return str.replace(C.REGEX_FORMAT, (match, $1) => $1 || matches[match] )
